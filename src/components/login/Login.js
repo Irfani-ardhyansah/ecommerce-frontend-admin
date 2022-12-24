@@ -5,13 +5,17 @@ import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios';
+import Alert from 'react-bootstrap/Alert';
 
 const Login = () => {
     const navigate          = useNavigate()
     const [email, setEmail] = useState('')
     const [pass, setPass]   = useState('')
+    const [statusAlert, setStatusAlert] = useState(false)
+    const { state }         = useLocation();
+    const [alertData] = useState(state)
     const { register, handleSubmit, formState: { errors } } = useForm();
     
     const sendData = async (e) => {
@@ -24,13 +28,30 @@ const Login = () => {
         }
     }
 
-    return(
-        <div className="loginContainer">
+    useEffect(() => {
+        if(alertData) {
+            setStatusAlert(!statusAlert)
+            setTimeout(() => {
+                setStatusAlert(statusAlert)
+            }, 6000)
+        }
+    }, [alertData])
 
+    return(
+        <>
+            
+        
+        <div className="loginContainer">
             <div className="loginBody">
                 <div className="loginTitleCardBody">
                     <h1>Login</h1>
-                </div>
+                </div> 
+                {
+                    statusAlert && 
+                        <Alert key="danger" variant="danger">
+                            {alertData.alert.message}
+                        </Alert>
+                }
                 <div className="loginContainerBody">
                     <Form onSubmit={handleSubmit(sendData)}>
                         <Container>
@@ -62,6 +83,7 @@ const Login = () => {
                 </div>
             </div>
         </div>
+        </>
     )
 }
 

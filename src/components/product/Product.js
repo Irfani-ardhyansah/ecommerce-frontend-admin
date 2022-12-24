@@ -191,7 +191,9 @@ const Product = () => {
             setReload(!reload)
             handleCloseDisc()
         }
-        }
+    }
+
+    const priceSplitter = (number) => (number && number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
 
     return (
         <>
@@ -230,8 +232,8 @@ const Product = () => {
                                                 <td>
                                                     {
                                                         row.discount == null ? 
-                                                            `Rp. ${row.price}` : 
-                                                            <span style={{textDecoration:'line-through'}}>Rp. {row.price}</span>
+                                                            `Rp. ${priceSplitter(row.price)}` : 
+                                                            <span style={{textDecoration:'line-through'}}>Rp. {priceSplitter(row.price)}</span>
                                                     } 
                                                         <br />
                                                     {row.discount && (
@@ -254,7 +256,7 @@ const Product = () => {
                                                     <td>
                                                         <Button variant="secondary" className="btn-sm" onClick={() => edit(row)}>Edit</Button>{' '}
                                                         <Button variant="danger" className="btn-sm" onClick={() => btnDelete(row.id)}>Hapus</Button>{' '}
-                                                        <Button variant="outline-secondary" className="btn-sm" onClick={() => btnDisc(row.id, row.discount)}>Disc</Button>{' '}
+                                                        <Button disabled={! row.status} variant="outline-secondary" className="btn-sm" onClick={() => btnDisc(row.id, row.discount)}>Disc</Button>{' '}
                                                     </td>
                                             </tr>
                                         })
