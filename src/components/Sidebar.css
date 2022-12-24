@@ -1,0 +1,21 @@
+.header-sidebar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 8.5vh;
+    background-color: #F0E9D2;
+}
+
+aside {
+    border-right: none !important;
+}
+
+hr {
+    margin-top: -1px;
+    margin-bottom: -1px;
+}
+
+a:hover {
+    background-color: rgba(128, 194, 199, 0.35) !important;
+    color: black;
+}

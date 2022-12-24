@@ -1,0 +1,24 @@
+.loginContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.loginBody {
+    width: 35%;
+} 
+
+.loginTitleCardBody {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5vh;
+}
+
+.loginContainerBody {
+    background-color: #eaeaea;
+    border: 1px solid;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 10px;
+    padding: 10px;
+}

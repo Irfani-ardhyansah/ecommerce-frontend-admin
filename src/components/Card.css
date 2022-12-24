@@ -1,0 +1,32 @@
+.ContainerBody {
+    background-color: #eaeaea;
+    margin-top: 12vh;
+    margin-left: 10%;
+    border: 1px solid;
+    height: 60vh;
+    width: 80%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 10px;
+}
+
+.TitleCardBody {
+    margin-top: 1vh;
+    margin-right: 10px;
+    margin-left: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+  
+.CardBody {
+    background-color: rgba(168, 166, 168, 0.35);
+    border: 2px solid;
+    margin-top: 1vh;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    padding: 5px;
+    border-radius: 10px;
+    border: none;
+}
+
