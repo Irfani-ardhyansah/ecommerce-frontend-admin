@@ -14,14 +14,15 @@ import Swal from "sweetalert2";
 const Category = () => {
     const [categoryList, setCategoryList]   = useState([])
     const [modalShow, setModalShow]         = useState(false)
-    const [name, setName]                   = useState('');
-    const [description, setDescription]     = useState('');
+    const [name, setName]                   = useState('')
+    const [image, setImage]                 = useState('')
+    const [description, setDescription]     = useState('')
     const [id, setId]                       = useState('')
-    const [reload, setReload]               = useState(false);
-    const dataLogin                         = JSON.parse(localStorage.getItem('dataLogin'));
+    const [reload, setReload]               = useState(false)
+    const dataLogin                         = JSON.parse(localStorage.getItem('dataLogin'))
     const config                            = {
-                                                    headers: { Authorization: `Bearer ${dataLogin.token}` }
-                                                };
+                                                    headers: { Authorization: `Bearer ${dataLogin.token}`, 'Content-Type': 'multipart/form-data' }
+                                                }
 
     const handleClose = () => setModalShow(false)
 
@@ -41,10 +42,19 @@ const Category = () => {
         e.preventDefault()
 
         if(id) {
-            const result = await axios.put(`${process.env.REACT_APP_DOMAIN}/api/category/${id}?_method=PUT`, {
-                name,
-                description
-            }, config)
+            const formData = new FormData()
+            if(image.name !== undefined) {
+                formData.append("image", image);
+            } 
+            formData.append("name", name);
+            formData.append("description", description);
+
+            const result = await axios({
+                method: "POST",
+                url: `${process.env.REACT_APP_DOMAIN}/api/category/${id}?_method=PUT`,
+                data: formData,
+                headers: config.headers,
+            });
             
             if(result.data.status == 200) {
                 showSwal("Success", "Berhasil update data", "success") 
@@ -52,10 +62,19 @@ const Category = () => {
                 handleClose()
             }
         } else {
-            const result = await axios.post(`${process.env.REACT_APP_DOMAIN}/api/category`, {
-                name,
-                description
-            }, config)
+            const formData = new FormData()            
+            if(image.name !== undefined) {
+                formData.append("image", image);
+            } 
+            formData.append("name", name);
+            formData.append("description", description);
+
+            const result = await axios({
+                method: "POST",
+                url: `${process.env.REACT_APP_DOMAIN}/api/category`,
+                data: formData,
+                headers: config.headers,
+            });
 
             if(result.data.status == 200) {
                 showSwal("Success", "Berhasil tambah data", "success") 
@@ -114,6 +133,7 @@ const Category = () => {
 
     useEffect(() => {
         getData()
+        console.log('reload')
     }, [reload])
 
 
@@ -135,6 +155,7 @@ const Category = () => {
                             <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th>Image</th>
                                     <th>Name</th>
                                     <th>Description</th>
                                     <th>Action</th>
@@ -145,6 +166,13 @@ const Category = () => {
                                     (categoryList.length > 0) && categoryList.map((row, key) => {
                                         return <tr>
                                             <td>{key+1}.</td>
+                                            <td >
+                                                <img width="50" key={Date.now()} src={
+                                                    row.image 
+                                                        ? `${process.env.REACT_APP_DOMAIN}${row.image}?${new Date().getTime()}` 
+                                                        : `${process.env.REACT_APP_DOMAIN}/categories/no_image.jpg?${new Date().getTime()}`
+                                                    } />
+                                            </td>
                                             <td>{row.name}</td>
                                             <td>{row.description}</td>
                                             <td>
@@ -169,12 +197,17 @@ const Category = () => {
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Control type="hidden" value={id} />
                             <Form.Label>Name</Form.Label>
-                            <Form.Control type="text" value={(name) && name} onChange={(e) => setName(e.target.value)} placeholder="Name..." />
+                            <Form.Control type="text" name="name" value={(name) && name} onChange={(e) => setName(e.target.value)} placeholder="Name..." />
                         </Form.Group>
 
                         <Form.Group className="mb-3" controlId="formBasicPassword">
                             <Form.Label>Description</Form.Label>
-                            <Form.Control type="text" value={(description) && description} onChange={(e) => setDescription(e.target.value)} placeholder="Description..." />
+                            <Form.Control type="text" name="description" value={(description) && description} onChange={(e) => setDescription(e.target.value)} placeholder="Description..." />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Label>Image</Form.Label>
+                            <Form.Control type="file" onChange={(e) => setImage(e.target.files[0])} />
                         </Form.Group>
                         <Button variant="primary" type="submit">
                             Submit

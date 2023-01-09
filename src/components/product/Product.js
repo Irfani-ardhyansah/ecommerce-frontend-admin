@@ -27,8 +27,8 @@ const Product = () => {
     const [id, setId]                       = useState('')
     const dataLogin                         = JSON.parse(localStorage.getItem('dataLogin'))
     const config                            = {
-                                                    headers: { Authorization: `Bearer ${dataLogin.token}` }
-                                                };
+                                                headers: { Authorization: `Bearer ${dataLogin.token}`, 'Content-Type': 'multipart/form-data' }
+                                            }
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const {
         register: register2,
@@ -75,16 +75,39 @@ const Product = () => {
     }
 
     const sendData = async (e) => {
-        let dataProduct = {'category_id' : e.category, 'name' : e.name, 'description' : e.description, 'price' : e.price, 'stock' : e.stock}
+        // let dataProduct = {'category_id' : e.category, 'name' : e.name, 'description' : e.description, 'price' : e.price, 'stock' : e.stock}
+        const formData = new FormData()             
+        if(e.image[0].name !== undefined) {
+            formData.append("image", e.image[0]);
+        }           
+        formData.append("category_id", e.category);
+        formData.append("name", e.name);
+        formData.append("description", e.description);
+        formData.append("price", e.price);
+        formData.append("stock", e.stock);
+        
         if(id) {
-            const result = await axios.put(`${process.env.REACT_APP_DOMAIN}/api/product/${id}?_method=PUT`, dataProduct, config)
+            const result = await axios({
+                method: "POST",
+                url: `${process.env.REACT_APP_DOMAIN}/api/product/${id}?_method=PUT`,
+                data: formData,
+                headers: config.headers,
+            });
+
+        //     const result = await axios.put(`${process.env.REACT_APP_DOMAIN}/api/product/${id}?_method=PUT`, dataProduct, config)
             if(result.data.status == 200) {
                 showSwal("Success", "Berhasil update data", "success") 
                 setReload(!reload)
                 handleClose()
             }
         } else {
-            const result = await axios.post(`${process.env.REACT_APP_DOMAIN}/api/product`, dataProduct, config)
+            const result = await axios({
+                method: "POST",
+                url: `${process.env.REACT_APP_DOMAIN}/api/product`,
+                data: formData,
+                headers: config.headers,
+            });
+        //     const result = await axios.post(`${process.env.REACT_APP_DOMAIN}/api/product`, dataProduct, config)
             if(result.data.status == 200) {
                 showSwal("Success", "Berhasil tambah data", "success") 
                 setReload(!reload)
@@ -213,6 +236,7 @@ const Product = () => {
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Image</th>
                                         <th>Name</th>
                                         <th>Stock</th>
                                         <th>Price</th>
@@ -225,6 +249,13 @@ const Product = () => {
                                         (products.length > 0) && products.map((row, key) => {   
                                             return <tr style={{verticalAlign: 'middle'}}>
                                                 <td>{key+1}.</td>
+                                                <td >
+                                                    <img width="50" key={Date.now()} src={
+                                                        row.image 
+                                                            ? `${process.env.REACT_APP_DOMAIN}${row.image}?${new Date().getTime()}` 
+                                                            : `${process.env.REACT_APP_DOMAIN}/products/no_image.jpg?${new Date().getTime()}`
+                                                        } />
+                                                </td>
                                                 <td>
                                                     {row.name}
                                                 </td>
@@ -326,7 +357,7 @@ const Product = () => {
                                 <Col>
                                     <Form.Group className="mb-3" controlId="formBasicPassword">
                                         <Form.Label>Image</Form.Label>
-                                        <Form.Control type="file" name="file"  isInvalid={!!errors.file} {...register("file")} />
+                                        <Form.Control type="file" name="image" isInvalid={!!errors.image} {...register("image")} />
                                         <Form.Control.Feedback type="invalid">Image is null...</Form.Control.Feedback>
                                     </Form.Group>
                                 </Col>
@@ -379,7 +410,6 @@ const Product = () => {
                             <Button variant="primary" type="submit">
                                 Submit
                             </Button>
-
                         </Container>
                     </Form>
                 </Modal.Body>
